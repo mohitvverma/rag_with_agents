@@ -5,7 +5,7 @@ import os
 
 class Settings(BaseSettings):
     # openai
-    OPENAI_API_KEY: str = os.environ.get("OPENAI_API_KEY", "sk-svcacct-Yku0iM4FEgZy4-ZRQyTSORrvlFg1bh5AedBDcvJ-OT9o96wRMoV2B0-xrFYFiIu8ozKnT3BlbkFJrQuUrji3KVIYYbsRdhuyG3JMuAsPcQJAp8XAfaVvoAj9FIC6sG_KYt-rAqomj5pY9fkA")
+    OPENAI_API_KEY: str = os.environ.get("OPENAI_API_KEY", "")
     OPENAI_CHAT_BASE_URL: str = os.environ.get(
         "OPENAI_CHAT_BASE_URL", "https://api.openai.com/v1/chat/completions"
     )
