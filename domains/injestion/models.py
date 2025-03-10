@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Literal, Optional, List, TypedDict, Dict
 from pydantic import BaseModel
-
+from domains.settings import config_settings
 
 FILE_TYPE = [
     "pdf",
@@ -38,5 +38,4 @@ class InjestRequestDto(StatusRequestDto):
     process_type: str
     params: Dict[str, Any]
     metadata: List[Dict[str, str]] = [{}]
-    namespace: str = None
-
+    namespace: Optional[str] = config_settings.PINECONE_DEFAULT_DEV_NAMESPACE

@@ -122,7 +122,7 @@ async def websocket_run_rag(websocket: WebSocket):
             language=data.get("language", "en"),
             chat_context=data.get("chat_context", []),
             websocket=websocket,
-            namespace=data.get("namespace", None),
+            namespace=data.get("namespace", config_settings.PINECONE_DEFAULT_DEV_NAMESPACE),
             question=data.get("question", ""),
         )
     except WebSocketDisconnect:

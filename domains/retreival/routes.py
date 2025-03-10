@@ -21,7 +21,7 @@ from domains.retreival.models import RagUseCase, RAGGenerationResponse
 from domains.retreival.models import Message
 
 
-PROMPT_PREFIX_QNA = """You are an AI assistant for a data research team that provides comprehensive answers based on the given context.\nUse the following pieces of context to answer the users question.\nIf you don't know the answer, just say that 'I tried to look for this information, but could not find something highly relevant to your query.', don't try to make up an answer.
+PROMPT_PREFIX_QNA = """You are an AI assistant for a data research team that provides comprehensive answers based on the given context.\nUse the following pieces of context to answer the users question.\nIf you don't know the answer based on target language, just say that 'I tried to look for this information, but could not find something highly relevant to your query.', don't try to make up an answer.
 """
 
 PROMPT_SUFFIX = """
@@ -77,6 +77,7 @@ def run_rag(
 
     if not namespace or namespace == "":
         namespace = config_settings.PINECONE_DEFAULT_DEV_NAMESPACE
+        logger.info(f"namespace: {namespace}")
 
     return rag_with_streaming(
         websocket=websocket,
@@ -121,6 +122,8 @@ async def rag_with_streaming(
         retreival_query = await transform_user_query_for_retreival(
             question, "OPTIMIZED_QUESTION_MODEL"
         )
+
+        logger.debug(f"Retreival query: {retreival_query}")
 
         related_docs_with_score = []
         if retreival_query or retreival_query != "None":
