@@ -319,7 +319,7 @@ python-dotenv==1.0.1
 python-iso639==2025.2.18
 python-json-logger @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/python-json-logger_1699249563021/work
 python-magic==0.4.27
-python-multipart==0.0.9
+python-multipart==0.0.18
 python-oxmsg==0.0.1
 python-pptx==1.0.2
 pytz==2025.1
