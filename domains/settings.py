@@ -86,7 +86,7 @@ class Settings(BaseSettings):
         ),
         "CLASSIFICATION_MODEL": os.environ.get("CLASSIFICATION_MODEL", "gpt-4o"),
         "OPTIMIZED_QUESTION_MODEL": os.environ.get("OPTIMIZED_QUESTION_MODEL", "gpt-4o"),
-        "OPENAI_CHAT": os.environ.get("OPENAI_CHAT", "gpt-4o"),
+        "OPENAI_CHAT_STREAMING_MODEL": os.environ.get("OPENAI_CHAT_STREAMING_MODEL", "gpt-4o"),
     }
 
     AZURE_OPENAI_SETTINGS: ClassVar[dict] = {
@@ -97,11 +97,17 @@ class Settings(BaseSettings):
             "API_VERSION": os.environ.get("AZURE_API_VERSION_LLM_MODEL_NAME", ""),
             "OPTIMIZED_QUESTION_MODEL": os.environ.get("OPTIMIZED_QUESTION_MODEL", "gpt-4o-mini"),
         },
-        "MODEL_NAME_GPT_4": {
-            "ENDPOINT": os.environ.get("AZURE_ENDPOINT_MODEL_NAME_GPT_4", ""),
-            "API_KEY": os.environ.get("AZURE_API_KEY_MODEL_NAME_GPT_4", ""),
-            "DEPLOYMENT": os.environ.get("AZURE_DEPLOYMENT_MODEL_NAME_GPT_4", ""),
-            "API_VERSION": os.environ.get("AZURE_API_VERSION_MODEL_NAME_GPT_4", ""),
+        "OPENAI_CHAT_MODEL_NAME": {
+            "ENDPOINT": os.environ.get("OPENAI_CHAT_MODEL_NAME", ""),
+            "API_KEY": os.environ.get("OPENAI_CHAT_MODEL_NAME", ""),
+            "DEPLOYMENT": os.environ.get("OPENAI_CHAT_MODEL_NAME", ""),
+            "API_VERSION": os.environ.get("OPENAI_CHAT_MODEL_NAME", ""),
+        },
+        "OPENAI_CHAT_STREAMING_MODEL":{
+            "ENDPOINT": os.environ.get("OPENAI_CHAT_STREAMING_MODEL", ""),
+            "API_KEY": os.environ.get("OPENAI_CHAT_STREAMING_MODEL", ""),
+            "DEPLOYMENT": os.environ.get("OPENAI_CHAT_STREAMING_MODEL", ""),
+            "API_VERSION": os.environ.get("OPENAI_CHAT_STREAMING_MODEL", ""),
         }
     }
 

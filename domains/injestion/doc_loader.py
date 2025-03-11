@@ -104,7 +104,7 @@ class DocLoaderExtended(URLDownloaderMixin, UnstructuredWordDocumentLoader):
 
 
 class FileLoader(BaseLoader):
-    def __init__(self, file_path: str, process_type: str = "text"):
+    def __init__(self, file_path: str, process_type: str):
         self.file_path = file_path
         self.process_type = process_type
         self._validate_process_type()
@@ -123,7 +123,7 @@ class FileLoader(BaseLoader):
             logger.info(f"{self.__class__.__name__}.load(): Attempting to load file from {self.file_path}")
             self._validate_file_path()
 
-            if self.process_type == "text":
+            if self.process_type == "txt":
                 text_loader = TextLoader(file_path=self.file_path)
                 file_contents = text_loader.load()
                 logger.info(f"Successfully loaded file from {self.file_path} and total pages in file is {len(file_contents)}")
@@ -170,7 +170,7 @@ def file_loader(
         raise Exception(f"{file_type} is not a supported file type")
 
     loaders: dict[str, Callable[[], BaseLoader]] = {
-        "text": lambda: FileLoader(pre_signed_url, process_type="text"),
+        "txt": lambda: FileLoader(pre_signed_url, process_type="txt"),
         "pdf": lambda: FileLoader(pre_signed_url, process_type="pdf"),
         "docx": lambda: FileLoader(pre_signed_url, process_type="docx"),
     }

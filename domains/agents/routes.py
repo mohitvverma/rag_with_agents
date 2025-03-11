@@ -33,7 +33,7 @@ async def react_orchestrator(query: str, id: str):
     tools = [qna_tool, information_extraction_tool, summarize_content_tool]
 
     # Get the model
-    model = get_chat_model(model_key="OPENAI_CHAT")
+    model = get_chat_model(model_key="OPENAI_CHAT_MODEL_NAME")
 
     # Create memory saver
     memory = MemorySaver()
@@ -59,7 +59,6 @@ async def react_orchestrator(query: str, id: str):
         state_modifier=system_prompt,
         checkpointer=memory,
         debug=True,
-        verbose=True,
     )
 
     # Execute with config
