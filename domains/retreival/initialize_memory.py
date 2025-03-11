@@ -6,6 +6,7 @@ from loguru import logger
 def initialise_memory_from_chat_context(chat_context, input_key: str = None):
     return __load_chat_context(chat_context, input_key)
 
+
 def __load_chat_context(chat_context, input_key: str):
     memory = ConversationBufferWindowMemory(
         memory_key=config_settings.CONVERSATIONAL_BUFFER_WINDOW_MEMORY_KEY,

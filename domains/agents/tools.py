@@ -25,94 +25,111 @@ from langchain_core.documents import Document
 from domains.retreival.utils import transform_user_query_for_retreival
 
 
-async def qna_tool(
-        request: QueryRequest
-) -> List[Document]:
+async def qna_tool(request: QueryRequest) -> List[Document]:
     """
-    This function retrieves documents related to a given query from a Pinecone index and filters them based on a minimum relevance score.
+    Retrieves and filters documents from Pinecone based on relevance score.
 
-    Parameters:
-    request (QueryRequest): An object containing the user query and namespace information.
+    Args:
+        request (QueryRequest): Contains query and namespace information
 
     Returns:
-    A list of tuples where each tuple contains:
-    A Document object representing a relevant document.
-    A float value indicating the relevance score of the document.
-    Returns an empty list if no documents meet the minimum relevance score.
+        List[Document]: Filtered list of relevant documents
 
-    Exceptions:
-    None explicitly handled, but failures in retrieval may raise runtime errors.
-    :param request:
-    :return:
+    Raises:
+        ValueError: If request parameters are invalid
+        Exception: For any other unexpected errors
     """
+    try:
+        # Validate input
+        if not request.query or not request.namespace:
+            raise ValueError("Invalid request parameters")
 
-    minimum_score = config_settings.MINIMUM_SCORE
-    transformed_query = await transform_user_query_for_retreival(request.query)
+        # Transform query for optimal retrieval
+        transformed_query = await transform_user_query_for_retreival(request.query)
+        if not transformed_query:
+            logger.warning("Query transformation returned empty result")
+            return []
 
-    related_docs_with_score = await get_related_docs_with_score(
-        index_name=config_settings.PINECONE_INDEX_NAME,
-        namespace=request.namespace,
-        question=transformed_query,
-    )
+        # Retrieve documents with scores
+        related_docs_with_score = await get_related_docs_with_score(
+            index_name=config_settings.PINECONE_INDEX_NAME,
+            namespace=request.namespace,
+            question=transformed_query,
+            total_docs_to_retrieve=config_settings.PINECONE_TOTAL_DOCS_TO_RETRIEVE
+        )
 
-    documents = [doc for doc in related_docs_with_score if doc[1] > minimum_score]
-
-    final_documents = []
-
-    logger.debug(f"Documents: {documents}")
-    if len(documents) != 0:
-        for doc in documents:
-            final_documents.append(
-                Document(
-                    metadata=doc[0].metadata,
-                    page_content=doc[0].page_content
-                )
+        # Filter documents based on minimum score
+        filtered_docs = [
+            Document(
+                metadata=doc[0].metadata,
+                page_content=doc[0].page_content
             )
+            for doc in related_docs_with_score
+            if doc[1] > config_settings.MINIMUM_SCORE
+        ]
 
-        return final_documents
-        logger.info(f"Final Document {final_documents}")
+        logger.info(f"Retrieved {len(filtered_docs)} relevant documents")
+        return filtered_docs[:3]
 
-    else:
-        return final_documents
+    except ValueError as ve:
+        logger.error(f"Validation error in qna_tool: {ve}")
+        raise
+
+    except Exception as e:
+        logger.exception("Unexpected error in qna_tool")
+        raise Exception(f"QnA tool failed: {str(e)}")
 
 
-async def information_extraction_tool(query: str) -> list[Document]:
+async def information_extraction_tool(query: str) -> List[Document]:
     """
-    This function performs a web search using the Tavily search API and extracts relevant content from the search results from web.
+    Performs web search using Tavily API and extracts relevant content.
 
-    Parameters:
-    query (str): The input query string to search for information.
+    Args:
+        query (str): Search query string
 
     Returns:
-    A list of Document objects, where each document contains:
-    metadata (dict): A dictionary with a "url" key storing the URL of the source.
-    page_content (str): The textual content extracted from the search result.
-    Returns an empty list if no search results are found.
+        List[Document]: List of documents containing search results
 
-    Exceptions:
-    None explicitly handled, but failures in the Tavily API call may raise runtime errors.
-
+    Raises:
+        ValueError: If query is empty or invalid
+        Exception: For API or processing failures
     """
-    tavily_tool = TavilySearchResults(max_results=2)
+    try:
+        # Validate input
+        if not query or not query.strip():
+            raise ValueError("Query string cannot be empty")
 
-    response = await tavily_tool.ainvoke(query)
+        # Initialize search tool with configuration
+        tavily_tool = TavilySearchResults(
+            max_results=2,
+        )
+        response = await tavily_tool.ainvoke(query)
 
-    final_response = []
-    if response:
-        for result in response:
-            final_response.append(
-                Document(
-                    metadata={
-                        'url': result.get("url", None)
-                    },
-                    page_content=result.get("content", None)
-                )
+        # Process results
+        if not response:
+            logger.info("No results found from Tavily search")
+            return []
+
+        # Extract and transform results
+        documents = [
+            Document(
+                metadata={"url": result.get("url")},
+                page_content=result.get("content", "").strip()
             )
+            for result in response
+            if result.get("content") and result.get("url")
+        ]
 
-        return final_response
+        logger.info(f"Retrieved {len(documents)} documents from Tavily")
+        return documents
 
-    else:
-        return final_response
+    except ValueError as ve:
+        logger.error(f"Invalid input: {ve}")
+        raise
+
+    except Exception as e:
+        logger.exception("Failed to extract information from Tavily")
+        raise Exception(f"Information extraction failed: {str(e)}")
 
 
 async def summarize_content_tool(content: List[Document]) -> str:
@@ -223,7 +240,6 @@ async def run_summarize_content_tool(state: OverallState):
     except Exception as e:
         logger.exception("Failed to run summarize_content_tool")
         raise e
-
 
 
 async def orchestrator_agent(query: str) -> str:

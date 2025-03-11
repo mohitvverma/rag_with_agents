@@ -14,6 +14,7 @@ from loguru import logger
 app = fastapi.FastAPI()
 vectorstore: Optional[VectorStore] = None
 
+
 # Add CORS Middleware
 app.add_middleware(
     CORSMiddleware,
@@ -74,6 +75,7 @@ async def websocket_run_rag(websocket: WebSocket):
     except Exception as e:
         print(f"Error: {e}")
         await websocket.close(code=1011)  # 1011 = Internal Server Error
+
 
 if __name__ == "__main__":
     uvicorn.run("service:app", host="0.0.0.0", port=8081)

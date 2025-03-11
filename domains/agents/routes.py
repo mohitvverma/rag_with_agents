@@ -58,6 +58,8 @@ async def react_orchestrator(query: str, id: str):
         tools=tools,
         state_modifier=system_prompt,
         checkpointer=memory,
+        debug=True,
+        verbose=True,
     )
 
     # Execute with config
