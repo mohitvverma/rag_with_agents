@@ -7,8 +7,8 @@ from domains.settings import config_settings
 from domains.status_util import call_update_status_api
 
 from loguru import logger
-
 from fastapi import APIRouter, BackgroundTasks, HTTPException, Header
+
 
 router = APIRouter(tags=["injestion"])
 
@@ -70,7 +70,7 @@ def load_file_push_to_db(
         request: InjestRequestDto
 ):
     try:
-        logger.debug(f"load_file_push_to_db(): Attempting to load file from {request.pre_signed_url}")
+        logger.debug(f"load_file]_push_to_db(): Attempting to load file from {request.pre_signed_url}")
 
         chunked_documents, non_chunked_docs = file_loader(
             pre_signed_url=request.pre_signed_url,
