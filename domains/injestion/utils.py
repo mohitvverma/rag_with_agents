@@ -5,6 +5,7 @@ from langchain_core.documents import Document
 from domains.models import RequestStatus
 from domains.status_util import call_update_status_api
 
+
 def split_text(text: list[Document], CHUNK_SIZE: int, CHUNK_OVERLAP: int) -> list[Document]:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
@@ -16,15 +17,15 @@ def split_text(text: list[Document], CHUNK_SIZE: int, CHUNK_OVERLAP: int) -> lis
 def get_embeddings(
         model_key: str
 ):
-    if model_key == "EMBEDDING_MODEL":
+    if config_settings.LLM_SERVICE == "openai":
         return OpenAIEmbeddings(
-            model=config_settings.LLMS.get("OPENAI_EMBEDDING_MODEL_NAME"),
+            model=config_settings.LLMS.get("EMBEDDING_MODEL_NAME", None),
             api_key=config_settings.OPENAI_API_KEY,
         )
 
-    elif model_key == "AZURE_EMBEDDING_MODEL":
+    elif config_settings.LLM_SERVICE == "groq":
         return OpenAIEmbeddings(
-            model=config_settings.LLMS.get("SUMMARIZE_LLM_MODEL"),
+            model=config_settings.LLMS.get("EMBEDDING_MODEL_NAME", None),
             api_key=config_settings.OPENAI_API_KEY,
         )
 
@@ -32,5 +33,4 @@ def get_embeddings(
 def update_status(api_path: str, request_status: RequestStatus, token: str=None) -> None:
     if api_path:
         call_update_status_api(api_path, request_status)
-
 

@@ -1,5 +1,3 @@
-import functools
-
 from pinecone import Pinecone, ServerlessSpec
 from domains.injestion.utils import get_embeddings
 from domains.settings import config_settings
@@ -7,23 +5,7 @@ from loguru import logger
 from langchain_community.vectorstores import Pinecone as PineconeVectorStore
 from pinecone.exceptions import PineconeApiException
 
-
-def retry_with_custom(retries=3):
-    def decorator_retry(func):
-        @functools.wraps(func)
-        def wrapper_retry(*args, **kwargs):
-            attempts = 0
-            while attempts < retries:
-                try:
-                    return func(*args, **kwargs)
-                except Exception as e:
-                    attempts += 1
-                    logger.error(f"Attempt {attempts} failed: {e}")
-                    kwargs['drop_index'] = True
-                    if attempts == retries:
-                        raise
-        return wrapper_retry
-    return decorator_retry
+from domains.handler import retry_with_custom_backoff
 
 
 def initialize_pinecone() -> Pinecone:
@@ -36,7 +18,7 @@ def initialize_pinecone() -> Pinecone:
         raise
 
 
-@retry_with_custom(retries=3)
+@retry_with_custom_backoff()
 def validate_and_create_index(
         index_name: str,
         drop_index: bool=config_settings.PINECONE_DROP_INDEX_NAME_STATUS
@@ -45,6 +27,7 @@ def validate_and_create_index(
         pc = initialize_pinecone()
         indexes = [index.get("name", None) for index in pc.list_indexes()]
 
+        logger.info(f"Existing indexes: {indexes}")
         def create_index(index_name: str) -> None:
             try:
                 pc.create_index(
@@ -71,7 +54,9 @@ def validate_and_create_index(
                         logger.info(f"Deleting index: {index_name}")
                         pc.delete_index(index_name)
                         create_index(index_name)
+                        logger.info(f"Successfully deleted index: {index_name}")
                         return True
+
                     except PineconeApiException as e:
                         logger.error(f"Pinecone API error: {e}")
                         return False
@@ -89,7 +74,12 @@ def validate_and_create_index(
         return False
 
 
-def push_to_database(texts, index_name, namespace):
+def push_to_database(
+        texts: list,
+        index_name: str = config_settings.PINECONE_INDEX_NAME,
+        namespace: str = config_settings.PINECONE_DEFAULT_DEV_NAMESPACE,
+        drop_namespace=config_settings.DELETE_NAMESPACE_STATUS,
+):
     try:
         meta_datas = [text.metadata for text in texts]
 
@@ -97,13 +87,49 @@ def push_to_database(texts, index_name, namespace):
             namespace = config_settings.PINECONE_DEFAULT_DEV_NAMESPACE
 
         try:
-            PineconeVectorStore.from_texts(
-                [t.page_content for t in texts],
-                get_embeddings(model_key="EMBEDDING_MODEL"),
-                meta_datas,
-                index_name=index_name,
-                namespace=namespace,
-            )
+            if config_settings.VECTOR_DATABASE_TO_USE == "pinecone":
+                if drop_namespace:
+                    pinecone_vs = initialize_pinecone()
+                    loaded_index = pinecone_vs.Index(index_name)
+
+                    if loaded_index is None:
+                        logger.error(f"Index {index_name} not found")
+                        return False
+
+                    list_namespaces = loaded_index.describe_index_stats(namespace=namespace)
+
+                    if namespace in list_namespaces:
+                        loaded_index.delete(
+                            delete_all=True,
+                            namespace=namespace,
+                        )
+                        logger.info(
+                            f"Successfully deleted namespace: {namespace} from index: {index_name}"
+                        )
+
+                    logger.info(f"Pushing data to Pinecone index: {index_name} and namespace: {namespace}")
+
+                    PineconeVectorStore.from_texts(
+                        [t.page_content for t in texts],
+                        get_embeddings(model_key="EMBEDDING_MODEL"),
+                        meta_datas,
+                        index_name=index_name,
+                        namespace=namespace,
+                    )
+                    logger.info("Successfully pushed data to Pinecone")
+
+                else:
+                    logger.info(f"Pushing data to Pinecone index: {index_name} and namespace: {namespace}")
+                    PineconeVectorStore.from_texts(
+                        [t.page_content for t in texts],
+                        get_embeddings(model_key="EMBEDDING_MODEL"),
+                        meta_datas,
+                        index_name=index_name,
+                        namespace=namespace,
+                    )
+                    logger.info("Successfully pushed data to Pinecone")
+
+
         except Exception as e:
             logger.error(f"Failed to push data to Pinecone: {str(e)}")
             raise Exception(f"Pinecone ingestion failed: {str(e)}")

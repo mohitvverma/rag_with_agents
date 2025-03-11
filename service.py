@@ -1,6 +1,8 @@
 import fastapi
 import loguru
 import uvicorn
+from fastapi import  Query, UploadFile, File
+from domains.agents.routes import router as agents_router
 from fastapi import WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from langchain.vectorstores.base import VectorStore
@@ -25,7 +27,6 @@ app.add_middleware(
     expose_headers=["Sec-WebSocket-Accept"],  # Ensure WebSocket headers are exposed
 )
 
-from domains.agents.routes import router as agents_router
 
 # Include other API routes
 app.include_router(
@@ -39,7 +40,6 @@ app.include_router(
     prefix="/agents",
 )
 
-from fastapi import Query
 
 @app.get("/run_agents")
 async def get_run_agents(
@@ -48,7 +48,10 @@ async def get_run_agents(
 ):
     """GET API endpoint for running agents."""
     try:
-        result = await react_orchestrator(query=query, id=thread_id)
+        result = await react_orchestrator(
+            query=query,
+            id=thread_id,
+        )
         return {"result": result}
     except Exception as e:
         logger.exception("Error running agents")
@@ -79,4 +82,3 @@ async def websocket_run_rag(websocket: WebSocket):
 
 if __name__ == "__main__":
     uvicorn.run("service:app", host="0.0.0.0", port=8081)
-

@@ -2,6 +2,8 @@ from enum import Enum
 from typing import Any, Literal, Optional, List, TypedDict, Dict
 from pydantic import BaseModel
 from domains.settings import config_settings
+from domains.models import RequestStatus
+
 
 FILE_TYPE = [
     "pdf",
@@ -9,16 +11,16 @@ FILE_TYPE = [
     "docx"
 ]
 
-
-class FileInjestionResponseDto(BaseModel):
+#Purpose: Represents the response of a file ingestion process.
+class FileInjestionResponseDto(RequestStatus):
     file_path: Optional[str] = None
     file_name: Optional[str] = None
     original_file_name: Optional[str] = None
     total_pages: Optional[int] = None
+    error_detail: Optional[str] = None
 
 class StatusRequestDto(BaseModel):
     request_id: int
-    response_data_api_path: str
 
 class InjestRequestDto(StatusRequestDto):
     pre_signed_url: str
@@ -26,6 +28,4 @@ class InjestRequestDto(StatusRequestDto):
     original_file_name: str
     file_type: str
     process_type: str
-    params: Dict[str, Any]
-    metadata: List[Dict[str, str]] = [{}]
     namespace: Optional[str] = config_settings.PINECONE_DEFAULT_DEV_NAMESPACE

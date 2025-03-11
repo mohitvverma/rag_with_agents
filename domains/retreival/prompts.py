@@ -18,24 +18,26 @@ Important Instructions:
 - Focus on the most relevant details from the context
 """
 
-DEFAULT_PROMPT_POST_SUFFIX = """Previous Conversation:
+DEFAULT_PROMPT_POST_SUFFIX = """
+Previous Conversation:
 {chat_history}
 
 Current Question: {question}
-Assistant:"""
+Assistant:
+"""
 
 
 def initialise_doc_search_prompt_template(prefix, suffix):
     prefix = prefix or config_settings.DEFAULT_PROMPT_PREFIX
     suffix = suffix or config_settings.DEFAULT_PROMPT_SUFFIX
 
-    context_arg = """Found {doc_count} relevant documents.
-
+    context_arg = """
+Found {doc_count} relevant documents.
 Context Information:
 {context}
 
 Based on these documents, here is my response:
-"""
+    """
 
     input_variables = ["chat_history", "question", "doc_count", "context", "language"]
 
@@ -48,4 +50,7 @@ Based on these documents, here is my response:
         ]
     )
 
-    return PromptTemplate(template=prompt_template, input_variables=input_variables)
+    return PromptTemplate(
+        template=prompt_template,
+        input_variables=input_variables
+    )

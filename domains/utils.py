@@ -1,12 +1,14 @@
 import fastapi
 
+import pandas as pd
+
 from langchain_openai import ChatOpenAI, AzureChatOpenAI
 from domains.settings import config_settings
 from domains.retreival.chat_handler import StreamingLLMCallbackHandler
 from loguru import logger
 
 
-def get_chat_model(model_key: str ="OPENAI_CHAT_MODEL_NAME"):
+def get_chat_model(model_key: str ="CHAT_MODEL_NAME"):
     try:
         if config_settings.LLM_SERVICE == "openai":
             return ChatOpenAI(
@@ -30,7 +32,7 @@ def get_chat_model(model_key: str ="OPENAI_CHAT_MODEL_NAME"):
 
 def get_chat_model_with_streaming(
     websocket: fastapi.WebSocket,
-    model_key: str = "OPENAI_CHAT_STREAMING_MODEL",
+    model_key: str = "CHAT_STREAMING_MODEL",
     temperature: float = 0.0,
 ):
     try:

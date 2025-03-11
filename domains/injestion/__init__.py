@@ -1,6 +1,7 @@
-from domains.injestion.vector_db_utils import validate_and_create_index
+from domains.vector_db.utils import validate_and_create_index
 from domains.settings import config_settings
 from loguru import logger
+
 
 def start_injestion():
     validate_and_create_index(

@@ -6,6 +6,7 @@ from typing import Optional, Any
 
 from domains.settings import config_settings
 
+
 class OverallState(TypedDict):
     contents: List[str]
     summaries: Annotated[list, operator.add]
@@ -14,6 +15,7 @@ class OverallState(TypedDict):
     query: Optional[str]
     namespace: Optional[str]
     documents: List[Document]
+
 
 class SummaryState(TypedDict):
     content: str

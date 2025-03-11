@@ -1,6 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel
 
+
 class RagUseCase(str, Enum):
     DEFAULT = "default"
     RESUME_FINDER = "resume_finder"

@@ -13,6 +13,6 @@ class ApiNameEnum(str, Enum):
 class RequestStatus(BaseModel):
     request_id: int
     status: RequestStatusEnum
-    api_name: ApiNameEnum = None
+    api_name: ApiNameEnum
     data_json: dict = None
     error_detail: str = None

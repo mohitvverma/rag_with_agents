@@ -25,7 +25,7 @@ from domains.injestion.utils import split_text
 class URLDownloaderMixin:
     @staticmethod
     def _is_valid_url(url: str) -> bool:
-        parsed = urlparse(url)
+        parsed = urlparse(url)        ##focus on splitting a URL string into its components
         return bool(parsed.netloc) and bool(parsed.scheme)
 
     def __init__(self, file_path=None, *args: Any, **kwargs: Any) -> None:
@@ -104,7 +104,7 @@ class DocLoaderExtended(URLDownloaderMixin, UnstructuredWordDocumentLoader):
 
 
 class FileLoader(BaseLoader):
-    def __init__(self, file_path: str, process_type: str):
+    def __init__(self, file_path: str, process_type: str = "text"):
         self.file_path = file_path
         self.process_type = process_type
         self._validate_process_type()
@@ -123,7 +123,7 @@ class FileLoader(BaseLoader):
             logger.info(f"{self.__class__.__name__}.load(): Attempting to load file from {self.file_path}")
             self._validate_file_path()
 
-            if self.process_type == "txt":
+            if self.process_type == "text":
                 text_loader = TextLoader(file_path=self.file_path)
                 file_contents = text_loader.load()
                 logger.info(f"Successfully loaded file from {self.file_path} and total pages in file is {len(file_contents)}")
@@ -162,7 +162,6 @@ def file_loader(
     original_file_name: str,
     file_type: str,
     process_type: str,
-    params: dict[str, Any],
     metadata: list[dict[str, str]] = [{}],
 ) -> Tuple[list[Document], Any]:
 
@@ -170,7 +169,7 @@ def file_loader(
         raise Exception(f"{file_type} is not a supported file type")
 
     loaders: dict[str, Callable[[], BaseLoader]] = {
-        "txt": lambda: FileLoader(pre_signed_url, process_type="txt"),
+        "text": lambda: FileLoader(pre_signed_url, process_type="text"),
         "pdf": lambda: FileLoader(pre_signed_url, process_type="pdf"),
         "docx": lambda: FileLoader(pre_signed_url, process_type="docx"),
     }
@@ -180,10 +179,6 @@ def file_loader(
 
     loaded_documents = loader().load()
     logger.info(f"documents loaded {len(loaded_documents)}")
-
-    parsed_documents: list[Document] = []
-    tags = params.get("tags") or []
-    synonyms = params.get("synonyms") or []
 
     parsed_documents = split_text(
         text=loaded_documents,
