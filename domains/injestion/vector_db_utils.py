@@ -5,7 +5,7 @@ from domains.injestion.utils import get_embeddings
 from domains.settings import config_settings
 from loguru import logger
 from langchain_community.vectorstores import Pinecone as PineconeVectorStore
-from pinecone.core.client.exceptions import PineconeApiException
+from pinecone.exceptions import PineconeApiException
 
 
 def retry_with_custom(retries=3):
