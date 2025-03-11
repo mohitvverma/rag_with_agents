@@ -193,6 +193,77 @@ async def summarize_content_tool(content: List[Document]) -> str:
         raise e
 
 
+async def run_qna_tool(state: OverallState):
+    """Fetches documents from the vector database."""
+    try:
+        request = QueryRequest(query=state['query'])
+        documents = await qna_tool(request)
+        state["documents"] = documents
+        return {"documents": documents}
+    except Exception as e:
+        logger.exception("Failed to run qna_tool")
+        raise e
+
+
+async def run_information_extraction_tool(state: OverallState):
+    """Runs information extraction if vector database results are insufficient."""
+    try:
+        extracted_docs = await information_extraction_tool(state["query"])
+        return {"documents": state["documents"] + extracted_docs}
+    except Exception as e:
+        logger.exception("Failed to run information_extraction_tool")
+        raise e
+
+
+async def run_summarize_content_tool(state: OverallState):
+    """Summarizes the final set of documents."""
+    try:
+        summary = await summarize_content_tool(state["documents"])
+        return {"final_summary": summary}
+    except Exception as e:
+        logger.exception("Failed to run summarize_content_tool")
+        raise e
+
+
+
+async def orchestrator_agent(query: str) -> str:
+    """
+    Orchestrates the workflow based on vector database results.
+
+    - This search the vector database first and if the infromation not found then fetches from internet and summarize them and give the
+    consise summary of the documents.
+
+    - All query needs to be handled by this agent.
+    - It will call qna_tool, information_extraction_tool, and summarize_content_tool.
+    """
+    try:
+        graph = StateGraph(OverallState)
+        graph.add_node("run_qna_tool", run_qna_tool)
+        graph.add_node("run_information_extraction_tool", run_information_extraction_tool)
+        graph.add_node("run_summarize_content_tool", run_summarize_content_tool)
+
+        graph.add_edge(START, "run_qna_tool")
+        graph.add_conditional_edges(
+            "run_qna_tool",
+            lambda state: "run_summarize_content_tool" if len(
+                state["documents"]) >= 5 else "run_information_extraction_tool"
+        )
+        graph.add_edge("run_information_extraction_tool", "run_summarize_content_tool")
+        graph.add_edge("run_summarize_content_tool", END)
+
+        app = graph.compile()
+        async for step in app.astream({"query": query, "documents": []}, {"recursion_limit": 10}):
+            if "final_summary" in step:
+                return step["final_summary"]
+
+        raise Exception("Failed to generate final summary")
+    except Exception as e:
+        logger.exception("Orchestrator agent failed")
+        raise e
+
+
+
+
 if __name__ == "__main__":
     res = asyncio.run(
         information_extraction_tool(

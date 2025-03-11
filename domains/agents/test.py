@@ -109,8 +109,8 @@ async def create_react_orchestrator(query: str, id: str):
     system_prompt = """
     You are an orchestrator agent responsible for handling all queries using a structured retrieval and summarization process. Follow this workflow for every query:
 
-    1. Search the vector database for relevant answers.
-    2. If no relevant answer is found, fetch information from the internet.
+    1. Search the vector database tool for relevant answers.
+    2. If no relevant answer is found, fetch information from the internet using information tool.
     3. Summarize the retrieved documents into a concise and clear response.
     
     Additionally:
@@ -139,28 +139,13 @@ async def create_react_orchestrator(query: str, id: str):
             config
     ):
         if step.get("agent"):
-            final_result = step.get("agent", {}).get("messages", [])[-1].pretty_print()
+            final_result = step.get("agent", {}).get("messages", [])[-1].content
 
     logger.info(f"Agent result: {final_result}")
     return final_result
 
-if __name__ == "__main__":
-    # res1 = asyncio.run(qna_tool(QueryRequest(query="What is the capital of France?")))
-    # if res1 and len(res1) < 5:
-    #     res2 = asyncio.run(information_extraction_tool("What is the capital of France?"))
-    #     for result in res2:
-    #         res1.append(result)
-    # logger.info("Vector and Web Result Documents: ")
-    # pprint.pprint(res1)
-    # res3 = asyncio.run(summarize_content_tool(res1))
-    # pprint.pprint(res3)
 
-    # re = asyncio.run(
-    #     new(
-    #         query="What is the capital of France and candidate work experience?",
-    #         id='asd12'
-    #     )
-    # )
+if __name__ == "__main__":
 
     re=asyncio.run(
         create_react_orchestrator(

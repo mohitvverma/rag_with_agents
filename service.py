@@ -8,7 +8,7 @@ from typing import Optional, List
 from domains.settings import config_settings
 from domains.injestion.routes import router as injestion_router
 from domains.retreival.routes import run_rag, RagUseCase, Message
-from domains.agents.routes import run_agents
+from domains.agents.routes import react_orchestrator
 from loguru import logger
 
 app = fastapi.FastAPI()
@@ -47,7 +47,7 @@ async def get_run_agents(
 ):
     """GET API endpoint for running agents."""
     try:
-        result = await run_agents(query=query, id=thread_id)
+        result = await react_orchestrator(query=query, id=thread_id)
         return {"result": result}
     except Exception as e:
         logger.exception("Error running agents")
