@@ -54,7 +54,7 @@ async def transform_user_query_for_retreival(
         if llm:
             llm_chain = prompt | llm | output_parser
             answer_from_model: str = await llm_chain.ainvoke({"question": question})
-            logger.info(f"Transformed query for retreival - {answer_from_model}")
+            logger.info(f"Transformed query for retrieval - {answer_from_model}")
 
             return answer_from_model
 
