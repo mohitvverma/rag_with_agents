@@ -50,10 +50,9 @@ async def transform_user_query_for_retreival(
         prompt = PromptTemplate(template=template, input_variables=["question"])
         output_parser = StrOutputParser()
         llm = get_chat_model(model_key=model_key)
-        logger.info(f"Sending question to LLM, to transform to retreival query ..\n{llm.invoke("Hi")}")
+
         if llm:
             llm_chain = prompt | llm | output_parser
-            logger.info("Sending question to LLM, to transform to retreival query ..")
             answer_from_model: str = await llm_chain.ainvoke({"question": question})
             logger.info(f"Transformed query for retreival - {answer_from_model}")
 
