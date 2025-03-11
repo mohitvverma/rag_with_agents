@@ -20,6 +20,8 @@ class Settings(BaseSettings):
     API_HOSTNAME: str = os.environ.get("API_HOSTNAME", "https://dummyjson.com/c")
     VECTOR_DATABASE_TO_USE: str = os.environ.get("VECTOR_DATABASE_TO_USE","pinecone")
 
+    MAX_TOKEN_LIMIT: int = os.environ.get("MAX_TOKEN_LIMIT", 1500)
+
     # pinecone
     PINECONE_API_KEY: str = os.environ.get("PINECONE_API_KEY", "")
     PINECONE_ENV: str = os.environ.get("PINECONE_ENV", "")
@@ -73,6 +75,8 @@ class Settings(BaseSettings):
     LLM_SERVICE: str = os.environ.get(
         "LLM_SERVICE", "openai"
     )
+
+    MAX_TOKENS: int = os.environ.get("MAX_TOKENS", 1500)
     # Modular Model Names
     LLMS: ClassVar[dict] = {
         "OPENAI_CHAT_MODEL_NAME": os.environ.get("OPENAI_CHAT_MODEL_NAME", "gpt-4o"),

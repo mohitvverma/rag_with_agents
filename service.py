@@ -1,12 +1,15 @@
 import fastapi
+import loguru
 import uvicorn
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from langchain.vectorstores.base import VectorStore
 from typing import Optional, List
 from domains.settings import config_settings
 from domains.injestion.routes import router as injestion_router
 from domains.retreival.routes import run_rag, RagUseCase, Message
+from domains.agents.routes import run_agents
+from loguru import logger
 
 app = fastapi.FastAPI()
 vectorstore: Optional[VectorStore] = None
@@ -21,11 +24,35 @@ app.add_middleware(
     expose_headers=["Sec-WebSocket-Accept"],  # Ensure WebSocket headers are exposed
 )
 
+from domains.agents.routes import router as agents_router
+
 # Include other API routes
 app.include_router(
     injestion_router,
-    prefix="/runner-gpt",
+    prefix="/runner",
 )
+
+
+app.include_router(
+    agents_router,
+    prefix="/agents",
+)
+
+from fastapi import Query
+
+@app.get("/run_agents")
+async def get_run_agents(
+    query: str = Query(..., description="The query or task to be processed by the agents"),
+    thread_id: str = Query(..., description="The identifier for the task or conversation")
+):
+    """GET API endpoint for running agents."""
+    try:
+        result = await run_agents(query=query, id=thread_id)
+        return {"result": result}
+    except Exception as e:
+        logger.exception("Error running agents")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.websocket("/ws/run_rag")
 async def websocket_run_rag(websocket: WebSocket):
@@ -47,7 +74,6 @@ async def websocket_run_rag(websocket: WebSocket):
     except Exception as e:
         print(f"Error: {e}")
         await websocket.close(code=1011)  # 1011 = Internal Server Error
-
 
 if __name__ == "__main__":
     uvicorn.run("service:app", host="0.0.0.0", port=8081)
