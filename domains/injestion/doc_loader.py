@@ -13,17 +13,12 @@ from langchain_core.documents import Document
 from domains.settings import config_settings
 
 from domains.injestion.models import FILE_TYPE
-from langchain.chains.summarize import load_summarize_chain
-
-from langchain.chains.question_answering import load_qa_chain
 from langchain.chains import RetrievalQA, LLMChain
-from langchain.prompts import PromptTemplate
 from typing import Any, Callable, IO, Dict, Iterator, get_args, Tuple, Callable
 
 from urllib.parse import urlparse
 from tempfile import NamedTemporaryFile
 from os import remove
-from domains.utils import get_chat_model
 from domains.injestion.utils import split_text
 
 
@@ -186,7 +181,6 @@ def file_loader(
     loaded_documents = loader().load()
     logger.info(f"documents loaded {len(loaded_documents)}")
 
-    document_summary = ""
     parsed_documents: list[Document] = []
     tags = params.get("tags") or []
     synonyms = params.get("synonyms") or []
