@@ -219,8 +219,6 @@ async def run_doc_retrieval_flow(
             "language": language
         })
 
-
-
         return RAGGenerationResponse(answer=response)
 
     except Exception as e:

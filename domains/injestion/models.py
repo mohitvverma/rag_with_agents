@@ -9,16 +9,6 @@ FILE_TYPE = [
     "docx"
 ]
 
-PROCESS_TYPE = Literal[
-  "text",
-  "image",
-  "excel",
-  "text_with_image",
-  "audio",
-  "survey_excel",
-  "sql_excel",
-  "video",
-]
 
 class FileInjestionResponseDto(BaseModel):
     file_path: Optional[str] = None
