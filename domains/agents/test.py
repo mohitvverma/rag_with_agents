@@ -6,6 +6,8 @@ from langgraph.prebuilt import create_react_agent
 from langchain_core.messages import HumanMessage
 from loguru import logger
 
+from langgraph.prebuilt import create_react_agent
+from langgraph.checkpoint.memory import MemorySaver
 from domains.utils import get_chat_model
 from domains.agents.models import QueryRequest, OverallState
 from domains.agents.tools import qna_tool, information_extraction_tool, summarize_content_tool
@@ -76,7 +78,7 @@ memory = MemorySaver()
 
 async def new(query: str, id):
     agent_executor = create_react_agent(
-        model=get_chat_model(model_key="OPENAI_CHAT"),
+        model=get_chat_model(model_key="OPENAI_CHAT_MODEL_NAME"),
         tools=[orchestrator_agent],
         checkpointer=memory,
     )
@@ -88,11 +90,6 @@ async def new(query: str, id):
     ):
         step["messages"][-1].pretty_print()
 
-
-from langgraph.prebuilt import create_react_agent
-from langgraph.checkpoint.memory import MemorySaver
-from domains.utils import get_chat_model
-from domains.agents.tools import qna_tool, information_extraction_tool, summarize_content_tool
 
 
 async def create_react_orchestrator(query: str, id: str):

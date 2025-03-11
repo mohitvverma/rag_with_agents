@@ -65,6 +65,11 @@ class Settings(BaseSettings):
         "CHAT_CONTEXT_AI_MESSAGE_KEY", "ai"
     )
 
+    # Storage Settings
+    STORAGE_FOLDER_NAME: str = os.getenv(
+        "STORAGE_FOLDER_NAME", "upload_file_storage"
+    )
+
     # optimized question
     OPTIMIZED_QUESTION_MODEL: str = os.environ.get("OPTIMIZED_QUESTION_MODEL", "gpt-4o-mini")
     MINIMUM_SCORE: float = float(os.environ.get("MINIMUM_SCORE", 0.5))

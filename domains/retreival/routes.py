@@ -1,4 +1,3 @@
-from enum import Enum
 from typing import List, Optional, Tuple, Any
 import asyncio
 from fastapi import WebSocket, HTTPException, status
@@ -119,16 +118,16 @@ async def rag_with_streaming(
 
         if not retreival_query or retreival_query == "None":
             logger.warning("Empty retrieval query")
-            return RAGGenerationResponse(answer="")
+            related_docs = "Empty retrieval query, answer does not need any context."
 
-        # Retrieve related documents
-        related_docs = await get_related_docs_without_context(
-            index_name,
-            namespace,
-            retreival_query,
-        )
-
-        logger.debug(f"Retrieved {len(related_docs)} documents")
+        else:
+            # Retrieve related documents
+            related_docs = await get_related_docs_without_context(
+                index_name,
+                namespace,
+                retreival_query,
+            )
+            logger.debug(f"Retrieved {len(related_docs)} documents")
 
         # Generate response
         response = await generator_routing(
@@ -204,7 +203,7 @@ async def run_doc_retrieval_flow(
 
         llm = get_chat_model_with_streaming(
             websocket,
-            model_key=config_settings.LLMS.get("OPENAI_CHAT")
+            model_key="OPENAI_CHAT_MODEL_NAME",
         )
         if not llm:
             raise ValueError("Failed to initialize language model")

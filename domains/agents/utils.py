@@ -1,5 +1,4 @@
 from langgraph.constants import Send
-from langgraph.graph import END, START, StateGraph
 from loguru import logger
 from typing import List, Literal
 from langchain_core.documents import Document
@@ -10,6 +9,7 @@ from domains.agents.models import OverallState
 from domains.agents.prompt import DOC_PARSER_PROMPT, DISTILL_SUMMARY_PROMPT
 
 from langchain_core.output_parsers import StrOutputParser
+
 
 def length_function(documents: List[Document]) -> int:
     """Get number of tokens for input contents."""
@@ -26,7 +26,7 @@ def initialize_doc_parser_chain():
             ChatPromptTemplate.from_messages(
                 [("human", DOC_PARSER_PROMPT)]) |
             get_chat_model(
-                model_key=config_settings.LLMS.get("OPENAI_CHAT", "OPENAI_CHAT")) |
+                model_key="OPENAI_CHAT_MODEL_NAME") |
             StrOutputParser()
             )
 
@@ -35,7 +35,7 @@ def reduce_summary_chain():
             ChatPromptTemplate.from_messages(
                 [("human", DISTILL_SUMMARY_PROMPT)]) |
             get_chat_model(
-                model_key=config_settings.LLMS.get("OPENAI_CHAT")) |
+                model_key="OPENAI_CHAT_MODEL_NAME") |
             StrOutputParser()
             )
 
