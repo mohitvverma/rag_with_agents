@@ -140,7 +140,7 @@ async def rag_with_streaming(
 
         if not retreival_query or retreival_query == "None":
             logger.warning("Empty retrieval query")
-            retreival_query = "None"
+            retreival_query = question
 
         # Retrieve related documents
         related_docs = await get_related_docs_without_context(
