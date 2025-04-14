@@ -96,7 +96,12 @@ def push_to_database(
                         logger.error(f"Index {index_name} not found")
                         return False
 
-                    list_namespaces = loaded_index.describe_index_stats(namespace=namespace)
+                    list_namespaces = list(loaded_index.describe_index_stats(namespace=namespace)["namespaces"].keys())
+
+
+                    logger.info(
+                                f"Namespaces in index: {index_name}: {list_namespaces}"
+                    )
 
                     if namespace in list_namespaces:
                         loaded_index.delete(
@@ -111,7 +116,7 @@ def push_to_database(
 
                     PineconeVectorStore.from_texts(
                         [t.page_content for t in texts],
-                        get_embeddings(model_key="EMBEDDING_MODEL"),
+                        get_embeddings(model_key="EMBEDDING_MODEL_NAME"),
                         meta_datas,
                         index_name=index_name,
                         namespace=namespace,
@@ -122,7 +127,7 @@ def push_to_database(
                     logger.info(f"Pushing data to Pinecone index: {index_name} and namespace: {namespace}")
                     PineconeVectorStore.from_texts(
                         [t.page_content for t in texts],
-                        get_embeddings(model_key="EMBEDDING_MODEL"),
+                        get_embeddings(model_key="EMBEDDING_MODEL_NAME"),
                         meta_datas,
                         index_name=index_name,
                         namespace=namespace,

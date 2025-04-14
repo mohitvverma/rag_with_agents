@@ -1,4 +1,5 @@
 from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from domains.settings import config_settings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
@@ -15,19 +16,26 @@ def split_text(text: list[Document], CHUNK_SIZE: int, CHUNK_OVERLAP: int) -> lis
 
 
 def get_embeddings(
-        model_key: str
+        model_key: str = "EMBEDDING_MODEL_NAME"
 ):
     if config_settings.LLM_SERVICE == "openai":
         return OpenAIEmbeddings(
-            model=config_settings.LLMS.get("EMBEDDING_MODEL_NAME", None),
+            model=config_settings.LLMS.get(model_key, None),
             api_key=config_settings.OPENAI_API_KEY,
         )
 
     elif config_settings.LLM_SERVICE == "groq":
         return OpenAIEmbeddings(
-            model=config_settings.LLMS.get("EMBEDDING_MODEL_NAME", None),
-            api_key=config_settings.OPENAI_API_KEY,
+            model=config_settings.LLMS.get(model_key, None),
+            api_key=config_settings.GROQ_API_KEY,
         )
+
+    elif config_settings.LLM_SERVICE == "google":
+        return GoogleGenerativeAIEmbeddings(
+            model=config_settings.GEMINI.get(model_key, None),
+            google_api_key=config_settings.GOOGLE_API_KEY
+        )
+
 
 
 def update_status(api_path: str, request_status: RequestStatus, token: str=None) -> None:
