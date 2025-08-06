@@ -391,7 +391,7 @@ torchvision==0.20.0
 tornado @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_a4w03z48br/croot/tornado_1718740114858/work
 tqdm==4.67.1
 traitlets @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_500m2_1wyk/croot/traitlets_1718227071952/work
-transformers==4.49.0
+transformers==4.53.0
 twine==6.1.0
 typer==0.9.4
 types-requests==2.32.0.20241016
