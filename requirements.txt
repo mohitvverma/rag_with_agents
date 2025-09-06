@@ -280,7 +280,7 @@ prometheus-client @ file:///Users/builder/cbouss/perseverance-python-buildout/cr
 prompt_toolkit==3.0.50
 propcache==0.2.0
 proto-plus==1.25.0
-protobuf==5.29.3
+protobuf==5.29.5
 psutil==6.1.0
 psycopg==3.2.5
 psycopg-pool==3.2.5
