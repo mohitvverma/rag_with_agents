@@ -386,7 +386,7 @@ tinycss2 @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/tinyc
 tokenizers==0.21.0
 toml==0.10.2
 tomli==2.2.1
-torch==2.5.0
+torch==2.7.0
 torchvision==0.20.0
 tornado @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_a4w03z48br/croot/tornado_1718740114858/work
 tqdm==4.67.1
