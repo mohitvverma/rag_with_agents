@@ -170,7 +170,7 @@ langchainhub==0.1.21
 langcodes==3.4.1
 langdetect==1.0.9
 langgraph==0.2.64
-langgraph-checkpoint==2.0.16
+langgraph-checkpoint==3.0.0
 langgraph-checkpoint-postgres==2.0.15
 langgraph-checkpoint-sqlite==2.0.5
 langgraph-sdk==0.1.51
