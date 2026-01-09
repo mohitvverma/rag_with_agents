@@ -415,7 +415,7 @@ weasel==0.4.1
 webencodings @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/webencodings_1699243630039/work
 websocket-client @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_d37u7gqts8/croot/websocket-client_1715878310260/work
 websockets==15.0
-Werkzeug==3.1.2
+Werkzeug==3.1.5
 wheel==0.44.0
 widgetsnbextension==4.0.13
 wikipedia==1.4.0
