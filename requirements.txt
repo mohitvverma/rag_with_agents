@@ -78,7 +78,7 @@ executing @ file:///opt/conda/conda-bld/executing_1646925071911/work
 fake-useragent==1.5.1
 fastapi==0.115.8
 fastjsonschema @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/python-fastjsonschema_1699238535414/work
-filelock==3.16.1
+filelock==3.20.3
 filetype==1.2.0
 fire==0.7.0
 Flask==3.0.3
