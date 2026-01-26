@@ -416,7 +416,7 @@ webencodings @ file:///Users/builder/cbouss/perseverance-python-buildout/croot/w
 websocket-client @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_d37u7gqts8/croot/websocket-client_1715878310260/work
 websockets==15.0
 Werkzeug==3.1.2
-wheel==0.44.0
+wheel==0.46.2
 widgetsnbextension==4.0.13
 wikipedia==1.4.0
 wrapt==1.17.2
